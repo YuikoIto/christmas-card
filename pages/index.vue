@@ -50,7 +50,7 @@ import canvg from "canvg";
 var config = {
   apiKey: process.env.API_KRY,
   authDomain: process.env.AUTH_DOMAIN,
-  DATABASE_URL: process.env.DATABASE_URL,
+  databaseUrl: process.env.DATABASE_URL,
   projectId: process.env.PROJECT_ID,
   storageBucket: process.env.STRAGE_BUCKET,
   messagingSenderId: process.env.MESSAGING_SENDER_ID
@@ -85,7 +85,8 @@ export default {
   data() {
     return {
       text: "クリスマスカード",
-      description: "大切な人にメッセージカードを贈ろう"
+      description: "大切な人にメッセージカードを贈ろう",
+      url: ""
     };
   },
   methods: {
@@ -95,8 +96,9 @@ export default {
         const createRef = storageRef.child(`${this.text}.jpg`);
         // Cloud Storageにアップロード
         await createRef.putString(data, "data_url");
-        const url = await createRef.getDownloadURL();
-        console.log(url);
+        let url = this.url;
+        url = await createRef.getDownloadURL();
+        //console.log(url);
 
         // Firestoreに保存しておく
         const card = db.collection("cards").doc(this.text);
@@ -107,6 +109,57 @@ export default {
       });
     }
   }
+  // head() {
+  //   return {
+  //     title: "クリスマスカード",
+  //     meta: [
+  //       { charset: "utf-8" },
+  //       { name: "viewport", content: "width=device-width, initial-scale=1" },
+  //       {
+  //         hid: "description",
+  //         name: "description",
+  //         content: this.description
+  //       },
+  //       {
+  //         hid: "og:site_name",
+  //         property: "og:site_name",
+  //         content: "クリスマスカード"
+  //       },
+  //       { hid: "og:type", property: "og:type", content: "website" },
+  //       { hid: "og:url", property: "og:url", content: this.url },
+  //       {
+  //         hid: "og:title",
+  //         property: "og:title",
+  //         content: "クリスマスカード"
+  //       },
+  //       {
+  //         hid: "og:description",
+  //         property: "og:description",
+  //         content: this.description
+  //       },
+  //       {
+  //         hid: "twitter:site",
+  //         name: "twitter:site",
+  //         content: "クリスマスカード"
+  //       },
+  //       {
+  //         hid: "twitter:title",
+  //         name: "twitter:title",
+  //         content: "summary_large_image"
+  //       },
+  //       {
+  //         hid: "twitter:image",
+  //         name: "twitter:image",
+  //         content: this.url
+  //       },
+  //       {
+  //         hid: "twitter:description",
+  //         name: "twitter:description",
+  //         content: this.description
+  //       }
+  //     ]
+  //   };
+  // }
 };
 </script>
 

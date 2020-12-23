@@ -1,14 +1,25 @@
 const functions = require("firebase-functions");
 
 exports.christmas = functions.https.onRequest((req, res) => {
-  const SITEURL = "new-christmas-card.firebaseapp.com";
-  const TITLE = "クリスマスカード";
-  const DESCRIPTION = "大切な人にクリスマスカードを贈ろうね";
-  const IMAGE = `https://firebasestorage.googleapis.com/v0/b/new-christmas-card.appspot.com/o/ogp.jpg?alt=media&token=82318ed0-d0c4-48c2-870a-64a2416d9d5e`;
+  if (req.params[0] !== undefined) {
+    const [, , param] = req.path.split("/");
+    // ファイル名作成
+    const filename = param + ".jpg";
+    // ストレージ設定
+    const storage = new Storage({});
+    const bucketName = process.env.STRAGE_BUCKET;
+    const path = encodeURIComponent(filename);
+    const IMAGE = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${path}?alt=media`;
+    const SITEURL = "new-christmas-card.firebaseapp.com";
+    const TITLE = "クリスマスカード";
+    const DESCRIPTION = "大切な人にクリスマスカードを贈ろうね";
+    res.set("Cache-Control", "public, max-age=600, s-maxage=600");
 
-  res.status(200).send(`<!doctype html>
+    res.status(200).send(`<!doctype html>
       <head>
-        <title>Time</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <title>Christmas</title>
         <meta property="og:title" content="${TITLE}">
         <meta property="og:image" content="${IMAGE}">
         <meta property="og:description" content="${DESCRIPTION}">
@@ -22,6 +33,8 @@ exports.christmas = functions.https.onRequest((req, res) => {
         <meta name="twitter:description" content="${DESCRIPTION}">
       </head>
       <body>
+        <script>location.href = "new-christmas-card.firebaseapp.com"; </script>
       </body>
     </html>`);
+  }
 });
